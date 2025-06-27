@@ -1,0 +1,195 @@
+<mat-toolbar color="primary">
+  <span>Receptionist Dashboard</span>
+</mat-toolbar>
+
+<div class="dashboard-container">
+  <mat-card class="dashboard-card"  (click)="openAddPatientForm()">
+    <mat-card-title>New Patients</mat-card-title>
+  </mat-card>
+
+  <mat-card class="dashboard-card" (click)="openPatientTable()">
+    <mat-card-title>View Patients</mat-card-title>
+  </mat-card>
+
+  <mat-card class="dashboard-card">
+    <mat-card-title>Book Appointments</mat-card-title>
+  </mat-card>
+
+  <mat-card class="dashboard-card">
+    <mat-card-title>Appointments</mat-card-title>
+  </mat-card>
+</div>
+
+<mat-card  *ngIf="showAddForm" class="add-patient-card">
+  <mat-card-title class="form-title">New Patient Registration</mat-card-title>
+  <mat-card-content>
+    <form #form="ngForm" class="form-grid">
+      <div class="form-row">
+        <mat-label>Name</mat-label>
+        <mat-form-field>
+          <input matInput placeholder="Name" [(ngModel)]="newPatient.name" name="name">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-label>Mobile</mat-label>
+        <mat-form-field>
+          <input matInput placeholder="Mobile" [(ngModel)]="newPatient.mobile" name="mobile">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-label>Age</mat-label>
+        <mat-form-field>
+          <input matInput placeholder="Age" [(ngModel)]="newPatient.age" name="age">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-label>Gender</mat-label>
+        <mat-form-field>
+          <mat-select placeholder="Gender" [(ngModel)]="newPatient.gender" name="gender">
+            <mat-option value="male">Male</mat-option>
+            <mat-option value="female">Female</mat-option>
+            <mat-option value="other">Other</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-label>Address</mat-label>
+        <mat-form-field>
+          <input matInput placeholder="Address" [(ngModel)]="newPatient.address" name="address">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-label>Symptoms</mat-label>
+        <mat-form-field>
+          <input matInput placeholder="Patient Symptoms" [(ngModel)]="newPatient.patientSymptoms" name="patientSymptoms">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-label>Visit</mat-label>
+        <mat-form-field>
+            <mat-select placeholder="visit type" [(ngModel)]="newPatient.visit" name="visit" required>
+          <mat-option value="new">new</mat-option>
+          <mat-option value="follow-up">follow-up</mat-option>
+          <mat-option value="emergency">emergency</mat-option>
+        </mat-select>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-button color="warn" (click)="showAddForm = false">Cancel</button>
+    <button mat-raised-button color="primary" (click)="submitAddPatient()">Submit</button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- patient table -->
+<div *ngIf="showPatientTable" class="patient-details">
+  <h3>Patient Details</h3>
+  <table mat-table [dataSource]="patients" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="sno">
+      <th mat-header-cell *matHeaderCellDef> S.No </th>
+      <td mat-cell *matCellDef="let element; let i = index;"> {{ i + 1 }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let r"> {{r.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="mobile">
+      <th mat-header-cell *matHeaderCellDef> Mobile </th>
+      <td mat-cell *matCellDef="let r"> {{r.mobile}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="age">
+      <th mat-header-cell *matHeaderCellDef> Age </th>
+      <td mat-cell *matCellDef="let r"> {{r.age}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef> Gender </th>
+      <td mat-cell *matCellDef="let r"> {{r.gender}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="patientSymptoms">
+      <th mat-header-cell *matHeaderCellDef> Patient Symptoms </th>
+      <td mat-cell *matCellDef="let r"> {{r.patientSymptoms}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="visit">
+      <th mat-header-cell *matHeaderCellDef> Visit </th>
+      <td mat-cell *matCellDef="let r"> {{r.visit}} </td>
+    </ng-container>
+
+     <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let patient">
+        <button mat-raised-button color="accent" (click)="editPatient(patient)">Edit</button>
+      </td>
+    </ng-container>
+    <tr mat-header-row
+      *matHeaderRowDef="['sno', 'name', 'mobile', 'age', 'gender',  'patientSymptoms', 'visit', 'actions']"></tr>
+    <tr mat-row
+      *matRowDef="let row; columns: ['sno', 'name', 'mobile', 'age', 'gender',  'patientSymptoms', 'visit', 'actions']">
+    </tr>
+  </table>
+
+<!-- Edit Patient -->
+<div *ngIf="editingPatient" class="edit-form">
+  <h3>Edit Patient</h3>
+  <form #editForm="ngForm" (ngSubmit)="updatePatient()">
+    <mat-form-field class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="editingPatient.name" name="name" required>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Mobile</mat-label>
+      <input matInput [(ngModel)]="editingPatient.mobile" name="mobile" required>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Age</mat-label>
+      <input matInput [(ngModel)]="editingPatient.age" name="age" type="number" required>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Gender</mat-label>
+      <mat-select [(ngModel)]="editingPatient.gender" name="gender" required>
+        <mat-option value="male">male</mat-option>
+        <mat-option value="female">female</mat-option>
+        <mat-option value="other">other</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Address</mat-label>
+      <input matInput [(ngModel)]="editingPatient.address" name="address" required>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Patient Symptoms</mat-label>
+      <input matInput [(ngModel)]="editingPatient.patientSymptoms" name="patientSymptoms" required>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Visit</mat-label>
+      <mat-select [(ngModel)]="editingPatient.visit" name="visit" required>
+        <mat-option value="new">new</mat-option>
+        <mat-option value="follow-up">follow-up</mat-option>
+        <mat-option value="emergency">emergency</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" (click)="updatePatient()">Update</button>
+    <button mat-raised-button color="warn" type="button" (click)="cancelEdit()">Cancel</button>
+  </form>
+</div>
