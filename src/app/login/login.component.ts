@@ -14,15 +14,16 @@ import { MatCardModule } from '@angular/material/card';
   standalone: true,
   imports: [CommonModule, FormsModule, MatButtonModule, MatInputModule, MatCardModule]
 })
+
 export class LoginComponent {
-register() {
-throw new Error('Method not implemented.');
-}
+  register() {
+    throw new Error('Method not implemented.');
+  }
   email = '';
   password = '';
   errorMessage = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) { }
 
   login() {
     const payload = { email: this.email, password: this.password };
@@ -32,31 +33,38 @@ throw new Error('Method not implemented.');
         console.log('Admin Response:', adminRes);
         console.log('Doctor Response:', doctorRes);
         console.log('Receptionist Response:', receptionRes);
-
-        if (adminRes?.message.toLowerCase() === 'login successful') {
-          this.handleLogin(adminRes.token, 'Admin');
-        } else if (doctorRes?.message.toLowerCase() === 'login successful') {
-          this.handleLogin(doctorRes.token, 'Doctor');
-        } else if (receptionRes?.message.toLowerCase() === 'login successful') {
-          this.handleLogin(receptionRes.token, 'Receptionist');
-        } else {
-          this.errorMessage = 'Invalid username or password.';
-        }
-      },
-      error: (err) => {
-        console.error('Login error:', err);
-        this.errorMessage = 'Server error.';
+        if (adminRes?.message?.toLowerCase() === 'login successful') {
+      this.handleLogin(adminRes.token, 'Admin');
+    } else if (doctorRes?.message?.toLowerCase() === 'login successful') {
+      const doctorId = doctorRes?.doctor?._id;
+      if(doctorId){
+        this.auth.setDoctorId(doctorId);
       }
-    });
-
+      this.handleLogin(doctorRes.token, 'Doctor');
+    } else if (receptionRes?.message?.toLowerCase() === 'login successful') {
+      this.handleLogin(receptionRes.token, 'Receptionist');
+    } else {
+      this.errorMessage = 'Invalid username or password.';
+    }
+  },
+  error: (err) => {
+    console.error('Login error:', err);
+    this.errorMessage = 'Server error.';
+  }
+});
   }
 
   handleLogin(token: string, role: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('role', role);
 
-    if (role === 'Admin') this.router.navigate(['/adminportal']);
-    else if (role === 'Doctor') this.router.navigate(['/doctorportal']);
-    else if (role === 'Receptionist') this.router.navigate(['/receptionistportal']);
+
+    if (role === 'Doctor') {
+       this.router.navigate(['/doctorportal']); // ✅ Set it here
+    }else if (role === 'Admin') {
+      this.router.navigate(['/adminportal']);
+    } else if (role === 'Receptionist') {
+      this.router.navigate(['/receptionistportal']);
+    }
   }
 }

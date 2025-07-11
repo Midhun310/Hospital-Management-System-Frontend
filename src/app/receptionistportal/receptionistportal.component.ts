@@ -12,10 +12,22 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-
+interface Patient {
+  _id: string;
+  name: string;
+  email?: string;
+  mobile: string
+  age?: number;
+  gender?: string;
+  address?: string;
+  patientSymptoms?: string;
+  visit?: string;
+}
 @Component({
   selector: 'app-receptionistportal',
   standalone: true,
+  templateUrl: './receptionistportal.component.html',
+  styleUrls: ['./receptionistportal.component.scss'],
   imports: [
     CommonModule,
     FormsModule,
@@ -27,30 +39,68 @@ import { MatSelectModule } from '@angular/material/select';
     MatIconModule,
     MatTableModule,
     MatOptionModule,
-    MatSelectModule
-  ],
-  templateUrl: './receptionistportal.component.html',
-  styleUrls: ['./receptionistportal.component.scss']
+    MatSelectModule,
+  ]
 })
 export class ReceptionistportalComponent {
   showAddForm = false;
   showPatientTable = false;
+  showBookingTable = false;
+  showDoctorList = false;
+  showAppointmentTable = false;
 
   patients: Patient[] = [];
+  doctors: any[] = [];
+  appointments: any[] = [];
+
   newPatient: Partial<Patient> = {};
   editingPatient: Patient | null = null;
+  editingAppointment: any = null;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  selectedPatientForBooking: Patient | null = null;
+  selectedDoctor: any = null;
+  bookingDate: string = '';
+  bookingTime: string = '';
+
+  constructor(private auth: AuthService, private router: Router) { }
+
+  resetViews() {
+    this.showAddForm = false;
+    this.showPatientTable = false;
+    this.showBookingTable = false;
+    this.showDoctorList = false;
+    this. showAppointmentTable = false;
+    this.editingPatient = null;
+    this.selectedPatientForBooking = null;
+    this.selectedDoctor = null;
+    this.bookingDate = '';
+    this.bookingTime = '';
+  }
 
   openAddPatientForm() {
+    this.resetViews();
     this.showAddForm = true;
-    this.showPatientTable = false;
   }
 
   openPatientTable() {
+    this.resetViews();
     this.showPatientTable = true;
-    this.showAddForm = false;
     this.loadPatients();
+  }
+
+  openBookAppointment() {
+    this.resetViews();
+    this.showBookingTable = true;
+    this.showAppointmentTable = false;
+    this.loadPatients();
+  }
+
+  openViewAppointments() {
+    this.resetViews();
+    this.showAppointmentTable = true;
+    this.loadAppointments();
+    this.loadPatients();
+    this.loadActiveDoctors();
   }
 
   loadPatients() {
@@ -69,31 +119,29 @@ export class ReceptionistportalComponent {
       next: (res) => {
         console.log('Patient added:', res);
         this.newPatient = {};
-        this.loadPatients();
-        this.showAddForm = false;
-        this.showPatientTable = true;
+        this.openPatientTable();
       },
       error: (err) => console.error('Failed to add patient:', err),
     });
   }
 
+  cancelAdd() {
+    this.newPatient = {};
+    this.showAddForm = false;
+  }
+
   editPatient(patient: Patient) {
-    debugger
     this.editingPatient = { ...patient };
     this.showPatientTable = true;
   }
 
   updatePatient() {
-    debugger
-
     if (!this.editingPatient?._id) return;
-
     this.auth.updatePatient(this.editingPatient._id, this.editingPatient).subscribe({
       next: (res) => {
         console.log('Updated patient:', res);
         this.editingPatient = null;
         this.loadPatients();
-        this.showPatientTable = true;
       },
       error: (err) => console.error('Failed to update patient:', err),
     });
@@ -101,23 +149,136 @@ export class ReceptionistportalComponent {
 
   cancelEdit() {
     this.editingPatient = null;
-    this.showPatientTable = true;
   }
 
-  cancelAdd() {
-    this.newPatient = {};
-    this.showAddForm = false;
+  selectPatient(patient: Patient) {
+    this.selectedPatientForBooking = patient;
+    this.selectedDoctor = null;
+    this.bookingDate = '';
+    this.bookingTime = '';
+    this.showDoctorList = false;
+    this.loadActiveDoctors();
   }
-}
 
-interface Patient {
-  _id: string;
-  name: string;
-  email?: string;
-  mobile: string;
-  age?: number;
-  gender?: string;
-  address?: string;
-  patientSymptoms?: string;
-  visit?: string;
+  loadActiveDoctors() {
+    this.auth.getDoctors().subscribe({
+      next: (res: any) => {
+        console.log('Doctors API Response:', res);
+        let doctorArray: any[] = [];
+        if (res?.showDoctor?.[0]?.data) {
+          doctorArray = res.showDoctor[0].data;
+        } else if (Array.isArray(res?.showDoctor)) {
+          doctorArray = res.showDoctor;
+        } else if (Array.isArray(res)) {
+          doctorArray = res;
+        }
+        console.log('Extracted Doctors:', doctorArray);
+
+        if (doctorArray) {
+          this.doctors = doctorArray.filter((d: any) =>
+            (d.status || d.workStatus || '').toLowerCase() === 'active');
+          this.showDoctorList = true;
+          console.log('Filtered Active Doctors:', this.doctors);
+        } else {
+          this.doctors = [];
+          console.warn('Doctor list not in expected format');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load doctors:', err);
+        this.doctors = [];
+      }
+    });
+  }
+
+  selectDoctor(doctor: any) {
+    this.selectedDoctor = doctor;
+  }
+
+  confirmBooking() {
+    if (!this.selectedPatientForBooking || !this.selectedDoctor || !this.bookingDate || !this.bookingTime) {
+      alert('Please fill in all details.');
+      return;
+    }
+
+    const appointment = {
+      patientId: this.selectedPatientForBooking._id,
+      doctorId: this.selectedDoctor._id,
+      date: this.bookingDate,
+      time: this.bookingTime,
+    };
+
+    this.auth.createAppointment(appointment).subscribe({
+      next: (res) => {
+        alert('Appointment Booked!');
+        this.showDoctorList = false;
+        this.selectedDoctor = null;
+        this.selectedPatientForBooking = null;
+        this.bookingDate = '';
+        this.bookingTime = '';
+        this.loadAppointments();
+      },
+      error: (err) => {
+        console.error('Booking failed:', err);
+        alert('Booking failed: ' + err.error?.message || 'Unknown error');
+      }
+    });
+  }
+
+  loadAppointments() {
+    this.auth.getAppointments().subscribe({
+      next: (res: any) => {
+        this.appointments = res.data || [];
+        console.log('Loaded Appointments:', this.appointments);
+      },
+      error: (err) => {
+        console.error('Failed to load appointments:', err);
+        this.appointments = [];
+      }
+    });
+  }
+
+  formatDateForInput(date: string | Date): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
+  editAppointment(appointment: any) {
+    this.editingAppointment = {
+      _id: appointment._id,
+      patientId: appointment.patient?._id || appointment.patientId,
+      doctorId: appointment.doctor?._id || appointment.doctorId,
+      date:  this.formatDateForInput(appointment.appointment?.date || appointment.date),
+      time: appointment.appointment?.time || appointment.time,
+      status: appointment.appointment?.status || 'scheduled'
+    };
+  }
+
+  cancelEditappointment() {
+    this.editingAppointment = null;
+  }
+  updateAppointment() {
+    if (!this.editingAppointment?._id) return;
+    const updatedData = {
+      appointmentId: this.editingAppointment._id,
+      doctorId: this.editingAppointment.doctorId,
+      patientId: this.editingAppointment.patientId,
+      date: this.editingAppointment.date,
+      time: this.editingAppointment.time,
+      status: this.editingAppointment.status || 'scheduled'
+    };
+
+    this.auth.updateAppointment(updatedData).subscribe({
+      next: (res) => {
+        alert('Appointment updated');
+        this.editingAppointment = null;
+        this.loadAppointments();
+      },
+      error: (err) => console.error('Failed to update appointment:', err)
+    });
+  }
 }

@@ -13,22 +13,23 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: #f5f5f5;
   transition: transform 0.2s ease;
   text-align: center;
+  background-color:aqua;
 
   &:hover {
     transform: scale(1.05);
-    background-color: #e0f7fa;
   }
 }
 
 th{
   font-size: large;
-
+  background-color:violet!important;
+  z-index: 1;
 }
 
-.add-patient-card {
+
+.edit-form {
   width: 800px;
   margin: 30px auto;
   padding: 20px;
@@ -51,6 +52,7 @@ th{
   display: flex;
   gap: 20px;
   align-items: center;
+
   flex-wrap: wrap;
 }
 
@@ -62,4 +64,69 @@ th{
 .full-width {
   width: 100%;
 }
+
+.mat-toolbar{
+  background-color: burlywood;
+}
+
+h2{
+  padding:20px;
+}
+
+td{
+  background-color:coral;
+  font-size: 15px;
+}
+
+mat-card-title{
+  font-size: 24px;
+}
+.edit{
+  background-color:yellow!important;
+
+}
+
+.delete{
+  background-color: red !important;
+  color: white !important;
+}
+
+.add{
+ background-color: greenyellow !important;
+}
+
+ng-container{
+  width:51%
+}
+
+mat-form-field{
+  width: 51%;
+}
+
+.update{
+  background-color: green!important;
+  color: white!important;
+}
+
+.cancel{
+  background-color: red!important;
+  color: white!important;
+}
+
+.save{
+   background-color: green!important;
+  color: white!important;
+}
+
+.date{
+  width:100%;
+}
+
+.edit-appointment-form{
+  width:80%;
+}
+
+
+
+
 

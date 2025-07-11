@@ -31,8 +31,19 @@ export interface Receptionist {
 })
 export class AuthService {
   private baseUrl = 'http://localhost:3000/api/';
+  private doctorId: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+
+setDoctorId(id: string) {
+  this.doctorId = id;
+  localStorage.setItem('doctorId', id);
+}
+
+getDoctorId(): string | null {
+  return this.doctorId || localStorage.getItem('doctorId');
+}
 
   // Multi-role login API (admin, doctor, receptionist)
   loginAllRoles(payload: any) {
@@ -91,22 +102,13 @@ export class AuthService {
   }
 
   // Update receptionist
-  updateReceptionist(
-    _id: string,
-    updatedReceptionist: Receptionist
-  ): Observable<any> {
-    return this.http.put(
-      `${this.baseUrl}admin/updatereceptionist`,
-      updatedReceptionist
-    );
+  updateReceptionist(_id: string, updatedReceptionist: Receptionist): Observable<any> {
+    return this.http.put(`${this.baseUrl}admin/updatereceptionist`,updatedReceptionist);
   }
 
   // Add new receptionist
   addReceptionist(p0: string, newReceptionist: Receptionist): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}admin/createreceptionist`,
-      newReceptionist
-    );
+    return this.http.post(`${this.baseUrl}admin/createreceptionist`, newReceptionist);
   }
 
   // Delete receptionist
@@ -121,17 +123,27 @@ export class AuthService {
 
   // Add new patient
   addPatient(newPatient: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}receptionist/createpatient`,
-      newPatient
-    );
+    return this.http.post(`${this.baseUrl}receptionist/createpatient`, newPatient);
   }
 
   // Update patient
   updatePatient(_id: string, updatedPatient: any): Observable<any> {
-    return this.http.put(
-      `${this.baseUrl}receptionist/updatePatient`,
-      updatedPatient
-    );
+    return this.http.put(`${this.baseUrl}receptionist/updatePatient`, updatedPatient);
+  }
+
+  //create appointment
+  createAppointment(appointment: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}receptionist/createappointment`, appointment);
+  }
+
+  // Get all patients
+  getAppointments(): Observable<any> {
+    return this.http.get(`${this.baseUrl}receptionist/showAppointments`);
+  }
+
+  // update appointment
+  updateAppointment(data: any) {
+    return this.http.put(`${this.baseUrl}receptionist/updateAppointment`, data);
   }
 }
+

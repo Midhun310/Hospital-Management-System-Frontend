@@ -47,9 +47,7 @@ interface Patient {
   address?: string;
   patientSymptoms?: string;
   visit?: string;
-  // Add other patient fields as needed
 }
-
 @Component({
   selector: 'app-adminportal',
   standalone: true,
@@ -70,9 +68,6 @@ interface Patient {
   styleUrls: ['./adminportal.component.scss']
 })
 export class AdminportalComponent {
-  cancelAdd() {
-    throw new Error('Method not implemented.');
-  }
   // Doctor properties
   doctors: Doctor[] = [];
   displayedColumns: string[] = ['sno', 'name', 'email', 'mobile', 'department', 'role', 'shift', 'workStatus', 'actions'];
@@ -89,13 +84,18 @@ export class AdminportalComponent {
 
   // Patient properties
   patients: Patient[] = [];
+  patientColumns: string[] = ['sno', 'name', 'mobile', 'age', 'gender', 'patient symptoms', 'visit', 'actions'];
   newPatient: Partial<Patient> = {};
   showPatientTable = false;
   editingPatient: Patient | null = null;
 
+  //appointment property
+  appointments: any[] = [];
+  showAppointmentTable: boolean = false;
+  editingAppointment: any = null;
+ 
   // Common UI flags
   showAddForm = false;
-
   constructor(private auth: AuthService, private router: Router) { }
 
   // Doctor Methods
@@ -106,7 +106,8 @@ export class AdminportalComponent {
         this.doctors = result?.data || [];
         this.showDoctorTable = true;
         this.showReceptionistTable = false;
-        this.showPatientTable=false;
+        this.showPatientTable = false;
+        this.showAppointmentTable = false;
         console.log('Loaded Doctors:', this.doctors);
       },
       error: (err) => {
@@ -130,6 +131,7 @@ export class AdminportalComponent {
         this.loadDoctors();
         this.showAddForm = false;
         this.newDoctor = {};
+        this.editingDoctor = null;
       },
       error: (err: any) => {
         console.error('Failed to add doctor:', err);
@@ -139,7 +141,6 @@ export class AdminportalComponent {
 
   updateDoctor() {
     if (!this.editingDoctor || !this.editingDoctor._id) return;
-
     console.log('Submitting doctor data:', this.editingDoctor);
     this.auth.updateDoctor(this.editingDoctor._id, this.editingDoctor).subscribe({
       next: (res) => {
@@ -175,7 +176,9 @@ export class AdminportalComponent {
         this.receptionists = result?.data || [];
         this.showReceptionistTable = true;
         this.showDoctorTable = false;
-        this.showPatientTable=false;
+        this.showPatientTable = false;
+        this.showAppointmentTable = false;
+        this.editingDoctor = null;
         console.log('Loaded Receptionists:', this.receptionists);
       },
       error: (err) => {
@@ -186,7 +189,6 @@ export class AdminportalComponent {
 
   updateReceptionist() {
     if (!this.editingReceptionist || !this.editingReceptionist._id) return;
-
     console.log('Submitting receptionist data:', this.editingReceptionist);
     this.auth.updateReceptionist(this.editingReceptionist._id!, this.editingReceptionist).subscribe({
       next: (res: any) => {
@@ -218,6 +220,10 @@ export class AdminportalComponent {
     this.editingReceptionist = { ...receptionist };
   }
 
+   cancelEditreceptionist() {
+    this.editingReceptionist = null;
+  }
+
   deleteReceptionist(id: string) {
     if (confirm('Are you sure you want to delete this receptionist?')) {
       this.auth.deleteReceptionist(id).subscribe({
@@ -232,19 +238,23 @@ export class AdminportalComponent {
     }
   }
 
-  // Patient Methods
-  loadPatients() {
+  loadPatients(showTable: boolean = true) {
     this.auth.getPatients().subscribe({
       next: (res) => {
         const result = res.showPatient?.[0];
         this.patients = result?.data || [];
+        if(showTable){
         this.showPatientTable = true;
         this.showDoctorTable = false;
         this.showReceptionistTable = false;
+        this.showAppointmentTable = false;
+        this.editingDoctor = null;
+        }
         console.log('Loaded Patients:', this.patients);
       },
       error: (err) => {
         console.error('Failed to load patients:', err);
+        this.patients = [];
       }
     });
   }
@@ -265,15 +275,14 @@ export class AdminportalComponent {
 
   updatePatient() {
     if (!this.editingPatient || !this.editingPatient._id) return;
-
     console.log('Submitting patient data:', this.editingPatient);
-    this.auth.updatePatient(this.editingPatient._id, this.editingPatient).subscribe({
-      next: (res) => {
+    this.auth.updatePatient(this.editingPatient._id!, this.editingPatient).subscribe({
+      next: (res: any) => {
         console.log('Update Success:', res);
         this.loadPatients();
         this.editingPatient = null;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Update Failed:', err);
       }
     });
@@ -286,6 +295,99 @@ export class AdminportalComponent {
   cancelEditPatient() {
     this.editingPatient = null;
   }
+
+  // appointments model
+  resetViews() {
+    this.showDoctorTable = false;
+    this.showReceptionistTable = false;
+    this.showPatientTable = false;
+    this.showAppointmentTable = true;
+    this.editingDoctor = null;
+    this.editingReceptionist = null;
+    this.editingPatient = null;
+    this.editingAppointment = null;
+    this.showAddForm = false;
+  }
+
+  openViewAppointments() {
+    this.resetViews();
+    this.showAppointmentTable = true;
+    this.loadAppointments();
+    this.loadPatients(false);
+    this.loadActiveDoctors();
+  }
+
+  loadActiveDoctors() {
+    this.auth.getDoctors().subscribe({
+      next: (res: any) => {
+        const doctorsArray = res?.showDoctor?.[0]?.data || [];
+        this.doctors = doctorsArray.filter((doc: any) =>
+          (doc.workStatus || '').toLowerCase() === 'active'
+        );
+        console.log('Loaded Active Doctors:', this.doctors);
+      },
+      error: (err) => {
+        console.error('Failed to load doctors:', err);
+        this.doctors = [];
+      }
+    });
+  }
+
+loadAppointments() {
+    this.auth.getAppointments().subscribe({
+      next: (res: any) => {
+        this.appointments = res.data || [];
+        this.showAppointmentTable=true;
+        console.log('Loaded Appointments:', this.appointments);
+      },
+      error: (err) => {
+        console.error('Failed to load appointments:', err);
+        this.appointments = [];
+      }
+    });
+  }
+
+  formatDateForInput(date: string | Date): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+  editAppointment(appointment: any) {
+    this.editingAppointment = {
+      _id: appointment._id,
+      patientId: appointment.patient?._id || appointment.patientId,
+      doctorId: appointment.doctor?._id || appointment.doctorId,
+      date:  this.formatDateForInput(appointment.appointment?.date || appointment.date),
+      time: appointment.appointment?.time || appointment.time,
+      status: appointment.appointment?.status || 'scheduled'
+    };
+  }
+
+    cancelEditappointment() {
+    this.editingAppointment = null;
+  }
+
+  updateAppointment() {
+    if (!this.editingAppointment?._id) return;
+    const updatedData = {
+      appointmentId: this.editingAppointment._id,
+      doctorId: this.editingAppointment.doctorId,
+      patientId: this.editingAppointment.patientId,
+      date: this.editingAppointment.date,
+      time: this.editingAppointment.time,
+      status: this.editingAppointment.status || 'scheduled'
+    };
+
+    this.auth.updateAppointment(updatedData).subscribe({
+      next: (res) => {
+        alert('Appointment updated');
+        this.editingAppointment = null;
+        this.loadAppointments();
+      },
+      error: (err) => console.error('Failed to update appointment:', err)
+    });
+  }
 }
-
-
