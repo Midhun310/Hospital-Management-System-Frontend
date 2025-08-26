@@ -1,5 +1,10 @@
 <mat-toolbar class="mat-toolbar">
-  <span>Admin Dashboard !!!</span>
+  <span class="admin">Admin Dashboard !!!</span>
+  <span class="spacer">
+    <button class=" delete" mat-button (click)="logout()">Logout
+      <mat-icon>logout</mat-icon>
+    </button>
+  </span>
 </mat-toolbar>
 
 <div class="dashboard-container">
@@ -21,183 +26,188 @@
 </div>
 
 <!-- Doctor Section -->
-<div class="doctordetails">
-  <div *ngIf="showDoctorTable">
-    <h2>Doctors Details</h2>
-    <table mat-table [dataSource]="doctors" class="mat-elevation-z8">
-      <!-- Columns -->
-      <ng-container matColumnDef="sno">
-        <th mat-header-cell *matHeaderCellDef> S.No </th>
-        <td mat-cell *matCellDef="let element; let i = index"> {{ i + 1 }} </td>
-      </ng-container>
+<div *ngIf="showDoctorTable">
+  <h2>Doctors Details</h2>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <!-- Columns -->
+    <ng-container matColumnDef="sno">
+      <th mat-header-cell *matHeaderCellDef>S.No</th>
+      <td mat-cell *matCellDef="let element; let i = index">{{page * limit + i + 1 }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="name">
-        <th class="back" mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.name}} </td>
-      </ng-container>
+    <ng-container matColumnDef="name">
+      <th class="back" mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.name }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.email}} </td>
-      </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.email }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="mobile">
-        <th mat-header-cell *matHeaderCellDef> Mobile </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.mobile}} </td>
-      </ng-container>
+    <ng-container matColumnDef="mobile">
+      <th mat-header-cell *matHeaderCellDef>Mobile</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.mobile }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="department">
-        <th mat-header-cell *matHeaderCellDef> Department </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.department}} </td>
-      </ng-container>
+    <ng-container matColumnDef="department">
+      <th mat-header-cell *matHeaderCellDef>Department</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.department }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef> Role </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.role}} </td>
-      </ng-container>
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef>Role</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.role }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="shift">
-        <th mat-header-cell *matHeaderCellDef> Shift </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.shift}} </td>
-      </ng-container>
+    <ng-container matColumnDef="shift">
+      <th mat-header-cell *matHeaderCellDef>Shift</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.shift }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="workStatus">
-        <th mat-header-cell *matHeaderCellDef> Work Status </th>
-        <td mat-cell *matCellDef="let doctor"> {{doctor.workStatus}} </td>
-      </ng-container>
+    <ng-container matColumnDef="workStatus">
+      <th mat-header-cell *matHeaderCellDef>Work Status</th>
+      <td mat-cell *matCellDef="let doctor">{{ doctor.workStatus }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Actions </th>
-        <td mat-cell *matCellDef="let doctor">
-          <button class="edit" mat-raised-button (click)="editDoctor(doctor)">Edit</button>
-          <button class="delete" mat-raised-button (click)="deleteDoctor(doctor._id)">Delete</button>
-        </td>
-      </ng-container>
+    <ng-container matColumnDef="actions" class=" action">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let doctor">
+        <button class="edit" mat-button (click)="editDoctor(doctor, editdoctorRef)">Edit</button>
+        <button class="delete" mat-button (click)="deleteDoctor(doctor._id)">Delete</button>
+      </td>
+    </ng-container>
 
-      <!-- Header & Row -->
-      <tr mat-header-row
-        *matHeaderRowDef="['sno', 'name', 'email', 'mobile', 'department', 'role', 'shift', 'workStatus', 'actions']">
-      </tr>
-      <tr mat-row
-        *matRowDef="let row; columns: ['sno', 'name', 'email', 'mobile', 'department', 'role', 'shift', 'workStatus', 'actions'];">
-      </tr>
-    </table>
+    <tr mat-header-row
+      *matHeaderRowDef="['sno', 'name', 'email', 'mobile', 'department', 'role', 'shift', 'workStatus', 'actions']">
+    </tr>
+    <tr mat-row
+      *matRowDef="let row; columns: ['sno', 'name', 'email', 'mobile', 'department', 'role', 'shift', 'workStatus', 'actions' ]">
+    </tr>
+  </table>
 
-    <!-- Add Doctor Button -->
-    <div style="margin-top: 20px;">
-      <button class="add" mat-raised-button (click)="showAddForm = true">Add Doctor</button>
-    </div>
+  <mat-paginator [length]="totalDoctorCount" [pageSize]="limit" [pageSizeOptions]="[10, 25, 50, 100]"
+    (page)="onPageChange($event)" showFirstLastButtons></mat-paginator>
 
-    <!-- Add Doctor Form -->
-    <div *ngIf="showAddForm" class="edit-form">
-      <h2>Add New Doctor</h2>
-      <form #addForm="ngForm" (ngSubmit)="addDoctor()" class="form-grid">
-        <mat-card-content>
-          <form #form="ngForm" class="form-grid">
-            <div class="form-row"
-              *ngFor="let field of ['name', 'email', 'password', 'mobile' , 'department', 'role', 'shift']">
-              <mat-form-field>
-                <mat-label>{{ field | titlecase }}</mat-label>
-                <ng-container [ngSwitch]="field">
-                  <input *ngSwitchCase="'name'" matInput [(ngModel)]="newDoctor.name" name="name">
-                  <input *ngSwitchCase="'email'" matInput [(ngModel)]="newDoctor.email" name="email">
-                  <input *ngSwitchCase="'password'" matInput [(ngModel)]="newDoctor.password" name="password">
-                  <input *ngSwitchCase="'mobile'" matInput [(ngModel)]="newDoctor.mobile" name="mobile">
+  <!-- Doctor Button -->
+  <div style="margin-top: 20px">
+    <button class="add" mat-button (click)="addBtnDoctor(template)"> Add Doctor</button>
+  </div>
 
-                  <mat-select *ngSwitchCase="'department'" [(ngModel)]="newDoctor.department" name="department">
-                    <mat-option value="Skindoctor">Skindoctor</mat-option>
-                    <mat-option value="Generaldoctor">Generaldoctor</mat-option>
-                    <mat-option value="Childdoctor">Childdoctor</mat-option>
-                    <mat-option value="Eyedoctor">Eyedoctor</mat-option>
-                  </mat-select>
+  <!--Doctor Form -->
+  <ng-template #template>
+    <h3>Add New Doctor</h3>
+    <form #addForm="ngForm" (ngSubmit)="addDoctor()" class="form-grid">
+      <mat-card-content appearance="outline">
+        <form #form="ngForm" class="form-grid">
+          <div class="form-row"
+            *ngFor=" let field of ['name', 'email', 'password', 'mobile', 'department', 'role', 'shift', 'work status']">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ field | titlecase }}</mat-label>
+              <ng-container [ngSwitch]="field">
+                <input *ngSwitchCase="'name'" matInput [(ngModel)]="newDoctor.name" name="name" required>
+                <input *ngSwitchCase="'email'" matInput [(ngModel)]="newDoctor.email" name="email" required>
+                <input *ngSwitchCase="'password'" matInput [(ngModel)]="newDoctor.password" name="password" required>
+                <input *ngSwitchCase="'mobile'" matInput [(ngModel)]="newDoctor.mobile" name="mobile" required>
 
-                  <mat-select *ngSwitchCase="'role'" [(ngModel)]="newDoctor.role" name="role">
-                    <mat-option value="Permanent">Permanent</mat-option>
-                    <mat-option value="Temporary">Temporary</mat-option>
-                  </mat-select>
+                <mat-select *ngSwitchCase="'department'" [(ngModel)]="newDoctor.department" name="department" required>
+                  <mat-option value="Skindoctor">Skindoctor</mat-option>
+                  <mat-option value="Generaldoctor">Generaldoctor</mat-option>
+                  <mat-option value="Childdoctor">Childdoctor</mat-option>
+                  <mat-option value="Eyedoctor">Eyedoctor</mat-option>
+                </mat-select>
 
-                  <mat-select *ngSwitchCase="'shift'" [(ngModel)]="newDoctor.shift" name="shift">
-                    <mat-option value="Day">Day</mat-option>
-                    <mat-option value="Night">Night</mat-option>
-                    <mat-option value="Day-Night">Day-Night</mat-option>
-                  </mat-select>
+                <mat-select *ngSwitchCase="'role'" [(ngModel)]="newDoctor.role" name="role" required>
+                  <mat-option value="Permanent">Permanent</mat-option>
+                  <mat-option value="Temporary">Temporary</mat-option>
+                </mat-select>
 
-                  <mat-select *ngSwitchCase="'work status'" [(ngModel)]="newDoctor.workStatus" name="workStatus">
-                    <mat-option value="Active">Active</mat-option>
-                    <mat-option value="Inactive">Inactive</mat-option>
-                  </mat-select>
-                </ng-container>
-              </mat-form-field>
-            </div>
-          </form>
-        </mat-card-content>
-        <div>
-          <button class="save" mat-raised-button type="submit">Save</button>
-          <button class="cancel" mat-raised-button type="button" (click)="showAddForm = false">Cancel</button>
+                <mat-select *ngSwitchCase="'shift'" [(ngModel)]="newDoctor.shift" name="shift" required>
+                  <mat-option value="Day">Day</mat-option>
+                  <mat-option value="Night">Night</mat-option>
+                  <mat-option value="Day-Night">Day-Night</mat-option>
+                </mat-select>
+
+                <mat-select *ngSwitchCase="'work status'" [(ngModel)]="newDoctor.workStatus" name="workStatus" required>
+                  <mat-option value="Active">Active</mat-option>
+                  <mat-option value="Inactive">Inactive</mat-option>
+                </mat-select>
+              </ng-container>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-card-content>
+      <div class="submit">
+        <button class="cancel" mat-button (click)="cancel()">Cancel</button>
+        <button class="save" mat-button type="submit">Save</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <!-- Edit Doctor -->
+  <ng-template #editdoctorRef>
+    <div *ngIf="editingDoctor">
+      <h3>Edit Doctor</h3>
+      <form #editForm="ngForm" (ngSubmit)="updateDoctor()">
+        <mat-dialog-content>
+          <mat-form-field  appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="editingDoctor.name" name="name" required>
+          </mat-form-field>
+
+          <mat-form-field  appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput [(ngModel)]="editingDoctor.email" name="email" required>
+          </mat-form-field>
+
+          <mat-form-field  appearance="outline">
+            <mat-label>Mobile</mat-label>
+            <input matInput [(ngModel)]="editingDoctor.mobile" name="mobile" required>
+          </mat-form-field>
+
+          <mat-form-field  appearance="outline">
+            <mat-label>Department</mat-label>
+            <mat-select [(ngModel)]="editingDoctor.department" name="department" required>
+              <mat-option value="Skindoctor">Skindoctor</mat-option>
+              <mat-option value="Generaldoctor">Generaldoctor</mat-option>
+              <mat-option value="Childdoctor">Childdoctor</mat-option>
+              <mat-option value="Eyedoctor">Eyedoctor</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field  appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select [(ngModel)]="editingDoctor.role" name="role" required>
+              <mat-option value="Permanent">Permanent</mat-option>
+              <mat-option value="Temporary">Temporary</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field  appearance="outline">
+            <mat-label>Shift</mat-label>
+            <mat-select [(ngModel)]="editingDoctor.shift" name="shift" required>
+              <mat-option value="Day">Day</mat-option>
+              <mat-option value="Night">Night</mat-option>
+              <mat-option value="Day-Night">Day-Night</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field  appearance="outline">
+            <mat-label>Work Status</mat-label>
+            <mat-select [(ngModel)]="editingDoctor.workStatus" name="workStatus">
+              <mat-option value="Active">Active</mat-option>
+              <mat-option value="Inactive">Inactive</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-dialog-content>
+
+        <div class="submit">
+          <button class="cancel" mat-button type="button" (click)="cancelEdit()">Cancel</button>
+          <button class="update" mat-button type="submit">Update</button>
         </div>
       </form>
     </div>
-  </div>
-
-  <!-- Edit Doctor -->
-  <div *ngIf="editingDoctor" class="edit-form">
-    <h2>Edit Doctor</h2>
-    <form #editForm="ngForm" (ngSubmit)="updateDoctor()">
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="editingDoctor.name" name="name" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Email</mat-label>
-        <input matInput [(ngModel)]="editingDoctor.email" name="email" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Mobile</mat-label>
-        <input matInput [(ngModel)]="editingDoctor.mobile" name="mobile" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Department</mat-label>
-        <mat-select [(ngModel)]="editingDoctor.department" name="department" required>
-          <mat-option value="Skindoctor">Skindoctor</mat-option>
-          <mat-option value="Generaldoctor">Generaldoctor</mat-option>
-          <mat-option value="Childdoctor">Childdoctor</mat-option>
-          <mat-option value="Eyedoctor">Eyedoctor</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Role</mat-label>
-        <mat-select [(ngModel)]="editingDoctor.role" name="role" required>
-          <mat-option value="Permanent">Permanent</mat-option>
-          <mat-option value="Temporary">Temporary</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Shift</mat-label>
-        <mat-select [(ngModel)]="editingDoctor.shift" name="shift" required>
-          <mat-option value="Day">Day</mat-option>
-          <mat-option value="Night">Night</mat-option>
-          <mat-option value="Day-Night">Day-Night</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Work Status</mat-label>
-        <mat-select [(ngModel)]="editingDoctor.workStatus" name="workStatus">
-          <mat-option value="Active">Active</mat-option>
-          <mat-option value="Inactive">Inactive</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div>
-        <button class="update" mat-raised-button type="submit">Update</button>
-        <button class="cancel" mat-raised-button type="button" (click)="cancelEdit()">Cancel</button>
-      </div>
-    </form>
-  </div>
+  </ng-template>
 </div>
 
 <!-- Receptionist Table -->
@@ -205,59 +215,63 @@
   <h2>Receptionist Details</h2>
   <table mat-table [dataSource]="receptionists" class="mat-elevation-z8">
     <ng-container matColumnDef="sno">
-      <th mat-header-cell *matHeaderCellDef> S.No </th>
-      <td mat-cell *matCellDef="let element; let i = index;"> {{ i + 1 }} </td>
+      <th mat-header-cell *matHeaderCellDef>S.No</th>
+      <td mat-cell *matCellDef="let element; let i = index">{{receptionistPage * receptionistLimit + i + 1 }}</td>
     </ng-container>
 
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let r"> {{r.name}} </td>
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let r">{{ r.name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef> Email </th>
-      <td mat-cell *matCellDef="let r"> {{r.email}} </td>
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let r">{{ r.email }}</td>
     </ng-container>
 
     <ng-container matColumnDef="mobile">
-      <th mat-header-cell *matHeaderCellDef> Mobile </th>
-      <td mat-cell *matCellDef="let r"> {{r.mobile}} </td>
+      <th mat-header-cell *matHeaderCellDef>Mobile</th>
+      <td mat-cell *matCellDef="let r">{{ r.mobile }}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> status </th>
-      <td mat-cell *matCellDef="let r"> {{r.status}} </td>
+      <th mat-header-cell *matHeaderCellDef>status</th>
+      <td mat-cell *matCellDef="let r">{{ r.status }}</td>
     </ng-container>
 
     <ng-container matColumnDef="shift">
-      <th mat-header-cell *matHeaderCellDef> Shift </th>
-      <td mat-cell *matCellDef="let r"> {{r.shift}} </td>
+      <th mat-header-cell *matHeaderCellDef>Shift</th>
+      <td mat-cell *matCellDef="let r">{{ r.shift }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let receptionist">
-        <button class="edit" mat-raised-button (click)="editReceptionist(receptionist)">Edit</button>
-        <button class="delete" mat-raised-button (click)="deleteReceptionist(receptionist._id)">Delete</button>
+        <button class="edit" mat-button (click)="editReceptionist(receptionist, editreceptionistRef)">Edit</button>
+        <button class="delete" mat-button (click)="deleteReceptionist(receptionist._id)">Delete</button>
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="['sno', 'name', 'email', 'mobile', 'status', 'shift', 'actions']"></tr>
     <tr mat-row *matRowDef="let row; columns: ['sno', 'name', 'email', 'mobile', 'status', 'shift', 'actions']"></tr>
   </table>
+  <mat-paginator [length]="totalReceptionistCount" [pageSize]="receptionistLimit" [pageSizeOptions]="[10, 25, 50, 100]"
+    (page)="onPageReceptionistChange($event)" showFirstLastButtons></mat-paginator>
 
-  <!-- Add Receptionist Button -->
-  <div style="margin-top: 20px;">
-    <button class="add" mat-raised-button color="primary" (click)="showAddForm = true">Add Receptionist</button>
+
+  <!-- Receptionist Button -->
+  <div style="margin-top: 20px">
+    <button class="add" mat-button color="primary" (click)="addBtnReceptionist(addreceptionist)">Add
+      Receptionist</button>
   </div>
 
-  <!-- Add Receptionist Form -->
-  <div *ngIf="showAddForm" class="edit-form">
-    <h2>Add New Receptionist</h2>
+  <!-- Receptionist Form -->
+  <ng-template #addreceptionist>
+    <h3>Add New Receptionist</h3>
     <form #addForm="ngForm" (ngSubmit)="addReceptionist()">
-      <mat-card-content>
+      <mat-card-content >
         <form #form="ngForm" class="form-grid">
-          <div class="form-row" *ngFor="let field of ['name', 'email', 'password', 'mobile' , 'shift', 'status']">
-            <mat-form-field>
+          <div class="form-row" *ngFor="let field of ['name', 'email', 'password', 'mobile', 'shift', 'status']">
+            <mat-form-field  appearance="outline">
               <mat-label>{{ field | titlecase }}</mat-label>
               <ng-container [ngSwitch]="field">
                 <input *ngSwitchCase="'name'" matInput [(ngModel)]="newReceptionist.name" name="name">
@@ -280,52 +294,57 @@
           </div>
         </form>
       </mat-card-content>
-      <button class="save" mat-raised-button type="submit">Save</button>
-      <button class="cancel" mat-raised-button type="button" (click)="showAddForm = false">Cancel</button>
-    </form>
-  </div>
-
-  <!-- Edit Receptionist -->
-  <div *ngIf="editingReceptionist" class="edit-form">
-    <h3>Edit Receptionist</h3>
-    <form #editForm="ngForm" (ngSubmit)="updateReceptionist()">
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="editingReceptionist.name" name="name" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Email</mat-label>
-        <input matInput [(ngModel)]="editingReceptionist.email" name="email" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Mobile</mat-label>
-        <input matInput [(ngModel)]="editingReceptionist.mobile" name="mobile" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Status</mat-label>
-        <mat-select [(ngModel)]="editingReceptionist.status" name="status" required>
-          <mat-option value="Permanent">Permanent</mat-option>
-          <mat-option value="Temporary">Temporary</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Shift</mat-label>
-        <mat-select [(ngModel)]="editingReceptionist.shift" name="shift" required>
-          <mat-option value="Day">Day</mat-option>
-          <mat-option value="Night">Night</mat-option>
-          <mat-option value="Day-Night">Day-Night</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div>
-        <button class="update" mat-raised-button type="submit">Update</button>
-        <button class="cancel" mat-raised-button type="button" (click)="cancelEditreceptionist()">Cancel</button>
+      <div class="submit">
+        <button class="cancel" mat-button type="button" (click)="cancel()">Cancel</button>
+        <button class="save" mat-button type="submit">Save</button>
       </div>
     </form>
-  </div>
+  </ng-template>
+
+  <!-- Edit Receptionist -->
+  <ng-template #editreceptionistRef>
+    <div *ngIf="editingReceptionist">
+      <h3>Edit Receptionist</h3>
+      <form #editForm="ngForm" (ngSubmit)="updateReceptionist()">
+        <mat-form-field  appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="editingReceptionist.name" name="name" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="editingReceptionist.email" name="email" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Mobile</mat-label>
+          <input matInput [(ngModel)]="editingReceptionist.mobile" name="mobile" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="editingReceptionist.status" name="status" required>
+            <mat-option value="Permanent">Permanent</mat-option>
+            <mat-option value="Temporary">Temporary</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Shift</mat-label>
+          <mat-select [(ngModel)]="editingReceptionist.shift" name="shift" required>
+            <mat-option value="Day">Day</mat-option>
+            <mat-option value="Night">Night</mat-option>
+            <mat-option value="Day-Night">Day-Night</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="submit">
+          <button class="cancel" mat-button type="button" (click)="cancelEditreceptionist()"> Cancel</button>
+          <button class="update" mat-button type="submit">Update</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
 </div>
 
 <!-- patient table -->
@@ -333,68 +352,71 @@
   <h2>Patient Details</h2>
   <table mat-table [dataSource]="patients" class="mat-elevation-z8">
     <ng-container matColumnDef="sno">
-      <th mat-header-cell *matHeaderCellDef> S.No </th>
-      <td mat-cell *matCellDef="let element; let i = index;"> {{ i + 1 }} </td>
+      <th mat-header-cell *matHeaderCellDef>S.No</th>
+      <td mat-cell *matCellDef="let element; let i = index">{{patientPage * patientLimit + i + 1 }}</td>
     </ng-container>
 
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let r"> {{r.name}} </td>
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let r">{{ r.name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="mobile">
-      <th mat-header-cell *matHeaderCellDef> Mobile </th>
-      <td mat-cell *matCellDef="let r"> {{r.mobile}} </td>
+      <th mat-header-cell *matHeaderCellDef>Mobile</th>
+      <td mat-cell *matCellDef="let r">{{ r.mobile }}</td>
     </ng-container>
 
     <ng-container matColumnDef="age">
-      <th mat-header-cell *matHeaderCellDef> Age </th>
-      <td mat-cell *matCellDef="let r"> {{r.age}} </td>
+      <th mat-header-cell *matHeaderCellDef>Age</th>
+      <td mat-cell *matCellDef="let r">{{ r.age }}</td>
     </ng-container>
 
     <ng-container matColumnDef="gender">
-      <th mat-header-cell *matHeaderCellDef> Gender </th>
-      <td mat-cell *matCellDef="let r"> {{r.gender}} </td>
+      <th mat-header-cell *matHeaderCellDef>Gender</th>
+      <td mat-cell *matCellDef="let r">{{ r.gender }}</td>
     </ng-container>
 
     <ng-container matColumnDef="patientSymptoms">
-      <th mat-header-cell *matHeaderCellDef> Patient Symptoms </th>
-      <td mat-cell *matCellDef="let r"> {{r.patientSymptoms}} </td>
+      <th mat-header-cell *matHeaderCellDef>Patient Symptoms</th>
+      <td mat-cell *matCellDef="let r">{{ r.patientSymptoms }}</td>
     </ng-container>
 
     <ng-container matColumnDef="visit">
-      <th mat-header-cell *matHeaderCellDef> Visit </th>
-      <td mat-cell *matCellDef="let r"> {{r.visit}} </td>
+      <th mat-header-cell *matHeaderCellDef>Visit</th>
+      <td mat-cell *matCellDef="let r">{{ r.visit }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let patient">
-        <button class="edit" mat-raised-button (click)="editPatient(patient)">Edit</button>
+        <button class="edit" mat-button (click)="editPatient(patient, editpatientRef)">Edit</button>
       </td>
     </ng-container>
 
     <tr mat-header-row
-      *matHeaderRowDef="['sno', 'name', 'mobile', 'age', 'gender',  'patientSymptoms', 'visit', 'actions']"></tr>
+      *matHeaderRowDef="['sno', 'name', 'mobile', 'age', 'gender', 'patientSymptoms', 'visit', 'actions']"></tr>
     <tr mat-row
-      *matRowDef="let row; columns: ['sno', 'name', 'mobile', 'age', 'gender',  'patientSymptoms', 'visit', 'actions']">
+      *matRowDef="let row; columns: ['sno', 'name', 'mobile', 'age', 'gender', 'patientSymptoms', 'visit', 'actions']">
     </tr>
   </table>
+  <mat-paginator [length]="totalPatientCount" [pageSize]="patientLimit" [pageSizeOptions]="[10, 25, 50, 100]"
+    (page)="onPagePatientChange($event)" showFirstLastButtons></mat-paginator>
 
-  <!-- Add Patient Button -->
-  <div style="margin-top: 20px;">
-    <button class="add" mat-raised-button (click)="showAddForm = true">Add Patient</button>
+
+  <!-- Patient Button -->
+  <div style="margin-top: 20px">
+    <button class="add" mat-button (click)="addBtnPatient(addpatient)">Add Patient</button>
   </div>
 
-  <!-- add patient table -->
-  <div *ngIf="showAddForm" class="edit-form">
-    <h2>Add New Patient</h2>
-    <form #addForm="ngForm" (ngSubmit)="addReceptionist()">
-      <mat-card-content>
+  <!-- patient table -->
+  <ng-template #addpatient>
+    <h3>Add New Patient</h3>
+    <form #addForm="ngForm" (ngSubmit)="addPatient()">
+      <mat-card-content >
         <form #form="ngForm" class="form-grid">
           <div class="form-row"
-            *ngFor="let field of ['name', 'mobile', 'age', 'gender' , 'address', 'patientSymptoms',  'visit']">
-            <mat-form-field>
+            *ngFor="let field of ['name', 'mobile', 'age', 'gender', 'address', 'patientSymptoms', 'visit']">
+            <mat-form-field  appearance="outline">
               <mat-label>{{ field | titlecase }}</mat-label>
               <ng-container [ngSwitch]="field">
                 <input *ngSwitchCase="'name'" matInput [(ngModel)]="newPatient.name" name="name">
@@ -402,172 +424,187 @@
                 <input *ngSwitchCase="'age'" matInput [(ngModel)]="newPatient.age" name="age">
 
                 <mat-select *ngSwitchCase="'gender'" [(ngModel)]="newPatient.gender" name="gender">
-                  <mat-option value="male">Male</mat-option>
-                  <mat-option value="female">Female</mat-option>
-                  <mat-option value="other">Other</mat-option>
+                  <mat-option value="Male">Male</mat-option>
+                  <mat-option value="Female">Female</mat-option>
+                  <mat-option value="Other">Other</mat-option>
                 </mat-select>
 
                 <input *ngSwitchCase="'address'" matInput [(ngModel)]="newPatient.address" name="address">
                 <input *ngSwitchCase="'patientSymptoms'" matInput [(ngModel)]="newPatient.patientSymptoms"
                   name="patientSymptoms">
                 <mat-select *ngSwitchCase="'visit'" [(ngModel)]="newPatient.visit" name="visit">
-                  <mat-option value="new">new</mat-option>
-                  <mat-option value="follow-up">follow-up</mat-option>
-                  <mat-option value="emergency">emergency</mat-option>
+                  <mat-option value="New">New</mat-option>
+                  <mat-option value="Follow-up">Follow-up</mat-option>
+                  <mat-option value="Emergency">Emergency</mat-option>
                 </mat-select>
               </ng-container>
             </mat-form-field>
           </div>
         </form>
       </mat-card-content>
-      <button class="save" mat-raised-button type="submit">save</button>
-      <button class="cancel" mat-raised-button type="button" (click)="showAddForm = false">Cancel</button>
-    </form>
-  </div>
 
-  <!-- Edit Patient -->
-  <div *ngIf="editingPatient" class="edit-form">
-    <h3>Edit Patient</h3>
-    <form #editForm="ngForm" (ngSubmit)="updatePatient()">
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="editingPatient.name" name="name" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Mobile</mat-label>
-        <input matInput [(ngModel)]="editingPatient.mobile" name="mobile" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Age</mat-label>
-        <input matInput [(ngModel)]="editingPatient.age" name="age" type="number" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Gender</mat-label>
-        <mat-select [(ngModel)]="editingPatient.gender" name="gender" required>
-          <mat-option value="male">male</mat-option>
-          <mat-option value="female">female</mat-option>
-          <mat-option value="other">other</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Address</mat-label>
-        <input matInput [(ngModel)]="editingPatient.address" name="address" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Patient Symptoms</mat-label>
-        <input matInput [(ngModel)]="editingPatient.patientSymptoms" name="patientSymptoms" required>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Visit</mat-label>
-        <mat-select [(ngModel)]="editingPatient.visit" name="visit" required>
-          <mat-option value="new">new</mat-option>
-          <mat-option value="follow-up">follow-up</mat-option>
-          <mat-option value="emergency">emergency</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div>
-        <button class="update" mat-raised-button type="submit">Update</button>
-        <button class="cancel" mat-raised-button type="button" (click)=" cancelEditPatient()">Cancel</button>
+      <div class="submit">
+        <button class="cancel" mat-button type="button" (click)="cancel()">Cancel</button>
+        <button class="save" mat-button type="submit">Save</button>
       </div>
     </form>
-  </div>
+  </ng-template>
+
+  <!-- Edit Patient -->
+  <ng-template #editpatientRef>
+    <div *ngIf="editingPatient">
+      <h3>Edit Patient</h3>
+      <form #editForm="ngForm" (ngSubmit)="updatePatient()">
+        <mat-form-field  appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="editingPatient.name" name="name" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Mobile</mat-label>
+          <input matInput [(ngModel)]="editingPatient.mobile" name="mobile" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Age</mat-label>
+          <input matInput [(ngModel)]="editingPatient.age" name="age" type="number" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Gender</mat-label>
+          <mat-select [(ngModel)]="editingPatient.gender" name="gender" required>
+            <mat-option value="Male">Male</mat-option>
+            <mat-option value="Female">Female</mat-option>
+            <mat-option value="Other">Other</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Address</mat-label>
+          <input matInput [(ngModel)]="editingPatient.address" name="address" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Patient Symptoms</mat-label>
+          <input matInput [(ngModel)]="editingPatient.patientSymptoms" name="patientSymptoms" required>
+        </mat-form-field>
+
+        <mat-form-field  appearance="outline">
+          <mat-label>Visit</mat-label>
+          <mat-select [(ngModel)]="editingPatient.visit" name="visit" required>
+            <mat-option value="New">New</mat-option>
+            <mat-option value="Follow-up">Follow-up</mat-option>
+            <mat-option value="Emergency">Emergency</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="submit">
+          <button class="cancel" mat-button type="button" (click)="cancelEditPatient()">Cancel</button>
+          <button class="update" mat-button type="submit">Update</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
 </div>
 
 <!-- View Appointments Table -->
 <div *ngIf="showAppointmentTable" class="appointment-table">
   <h2>Appointments</h2>
   <table mat-table [dataSource]="appointments" class="mat-elevation-z8">
-
     <ng-container matColumnDef="sno">
-      <th mat-header-cell *matHeaderCellDef> S.No </th>
-      <td mat-cell *matCellDef="let row; let i = index"> {{ i + 1 }} </td>
+      <th mat-header-cell *matHeaderCellDef>S.No</th>
+      <td mat-cell *matCellDef="let element; let i = index">{{appointmentsPage * appointmentsLimit + i + 1 }}</td>
+      <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
     </ng-container>
 
     <ng-container matColumnDef="patient">
-      <th mat-header-cell *matHeaderCellDef> Patient Name </th>
-      <td mat-cell *matCellDef="let row"> {{ row.patient?.name || row.patientName }} </td>
+      <th mat-header-cell *matHeaderCellDef>Patient Name</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.patient?.name || row.patientName }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="doctor">
-      <th mat-header-cell *matHeaderCellDef> Doctor Name </th>
-      <td mat-cell *matCellDef="let row"> {{ row.doctor?.name || row.doctorName }} </td>
+      <th mat-header-cell *matHeaderCellDef>Doctor Name</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.doctor?.name || row.doctorName }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef> Date </th>
-      <td mat-cell *matCellDef="let row"> {{ row.appointment?.date | date: 'shortDate' }} </td>
+      <th mat-header-cell *matHeaderCellDef>Date</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.appointment?.date | date : "shortDate" }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="time">
-      <th mat-header-cell *matHeaderCellDef> Time </th>
-      <td mat-cell *matCellDef="let row"> {{ row.appointment?.time }} </td>
+      <th mat-header-cell *matHeaderCellDef>Time</th>
+      <td mat-cell *matCellDef="let row">{{ row.appointment?.time }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let row">
-        <button class="edit" mat-raised-button (click)="editAppointment(row)">Edit</button>
+        <button class="edit" mat-button (click)="editAppointment(row,editappointmentRef)">Edit </button>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef> Status </th>
-      <td mat-cell *matCellDef="let row"> {{ row.appointment?.status || 'scheduled' }} </td>
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.appointment?.status || "scheduled" }}
+      </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="['sno', 'patient', 'doctor', 'date', 'time', 'status', 'actions']"></tr>
+    <tr mat-header-row *matHeaderRowDef="['sno', 'patient', 'doctor', 'date', 'time', 'status', 'actions' ]"></tr>
     <tr mat-row *matRowDef="let row; columns: ['sno', 'patient', 'doctor', 'date', 'time', 'status', 'actions']"></tr>
   </table>
-
+  <mat-paginator [length]="totalAppointmentsCount" [pageSize]="appointmentsLimit" [pageSizeOptions]="[10, 25, 50, 100]"
+    (page)="onPageAppointmentChange($event)" showFirstLastButtons></mat-paginator>
 
 
   <!-- Edit Appointment Form -->
-  <div *ngIf="editingAppointment" class="edit-form">
-    <h2>Edit Appointment for: {{ editingAppointment.patient?.name || editingAppointment.patientName }}</h2>
+  <ng-template #editappointmentRef>
+    <div *ngIf="editingAppointment">
+      <h3>Edit Appointment for: {{ editingAppointment.patient?.name || editingAppointment.patientName }}</h3>
+      <form (ngSubmit)="updateAppointment()" #editAppForm="ngForm">
+        <mat-form-field  appearance="outline">
+          <mat-label>Patient</mat-label>
+          <mat-select [(ngModel)]="editingAppointment.patientId" name="patientId" required>
+            <mat-option *ngFor="let p of patients" [value]="p._id">{{p.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-    <form (ngSubmit)="updateAppointment()" #editAppForm="ngForm">
-      <mat-form-field>
-        <mat-label>Patient</mat-label>
-        <mat-select [(ngModel)]="editingAppointment.patientId" name="patientId" required>
-          <mat-option *ngFor="let p of patients" [value]="p._id">{{ p.name }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field  appearance="outline">
+          <mat-label>Doctor</mat-label>
+          <mat-select [(ngModel)]="editingAppointment.doctorId" name="doctorId" required>
+            <mat-option *ngFor="let d of doctors" [value]="d._id">{{d.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Doctor</mat-label>
-        <mat-select [(ngModel)]="editingAppointment.doctorId" name="doctorId" required>
-          <mat-option *ngFor="let d of doctors" [value]="d._id">{{ d.name }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field  appearance="outline">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" [(ngModel)]="editingAppointment.date" name="date" required />
+        </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Date</mat-label>
-        <input matInput type="date" [(ngModel)]="editingAppointment.date" name="date" required />
-      </mat-form-field>
+        <mat-form-field  appearance="outline">
+          <mat-label>Time</mat-label>
+          <input matInput type="time" [(ngModel)]="editingAppointment.time" name="time" required />
+        </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Time</mat-label>
-        <input matInput type="time" [(ngModel)]="editingAppointment.time" name="time" required />
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Status</mat-label>
-        <mat-select [(ngModel)]="editingAppointment.status" name="status" required>
-          <mat-option value="scheduled">Scheduled</mat-option>
-          <mat-option value="completed">Completed</mat-option>
-          <mat-option value="cancelled">Cancelled</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div>
-        <button mat-raised-button color="primary" type="submit">Update</button>
-        <button mat-raised-button color="warn" type="button" (click)="cancelEditappointment()">Cancel</button>
-      </div>
-    </form>
-  </div>
+        <mat-form-field  appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="editingAppointment.status" name="status" required>
+            <mat-option value="scheduled">Scheduled</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="cancelled">Cancelled</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="submit">
+          <button class="cancel" mat-button type="button" (click)="cancelEditappointment()">Cancel</button>
+          <button class="update" mat-button type="submit">Update</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
 </div>

@@ -16,11 +16,10 @@
   transition: transform 0.2s ease;
   text-align: center;
   background: #e1eec3;
-  background: -webkit-linear-gradient(to right, #f05053, #e1eec3);
   background: linear-gradient(to right, #f05053, #e1eec3);
-  &:hover {
-    transform: scale(1.05);
-  }
+}
+.dashboard-card:hover {
+  transform: scale(1.05);
 }
 
 th {
@@ -71,7 +70,6 @@ h2 {
 h3 {
   padding: 20px;
   background: #005AA7;
-  background: -webkit-linear-gradient(to right, #FFFDE4, #005AA7);
   background: linear-gradient(to right, #FFFDE4, #005AA7);
 }
 
@@ -114,5 +112,4 @@ mat-form-field {
 .login-error-snackbar {
   background-color: #f44336;
   color: white;
-}
-
+}/*# sourceMappingURL=adminportal.component.css.map */

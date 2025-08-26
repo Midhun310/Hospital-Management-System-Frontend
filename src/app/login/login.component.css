@@ -1,16 +1,16 @@
-.login-container {  height: 100vh;
+.login-container {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
- background-position: fixed;
+  background-position: fixed;
   background-image: url(/loginbg1.jpg);
 }
 
 .login-card {
   width: 350px;
   padding: 20px;
-  background: #ff6e7f;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #bfe9ff, #ff6e7f);
+  background: #ff6e7f; /* fallback for old browsers */
   background: linear-gradient(to right, #bfe9ff, #ff6e7f);
 }
 
@@ -36,10 +36,9 @@
 }
 
 .login-error-snackbar {
-  background-color: #f44336; 
+  background-color: #f44336;
   color: white;
 }
-
 
 .save {
   color: green !important;
@@ -49,4 +48,4 @@
   color: red;
   margin-top: 10px;
   text-align: center;
-}
+}/*# sourceMappingURL=login.component.css.map */

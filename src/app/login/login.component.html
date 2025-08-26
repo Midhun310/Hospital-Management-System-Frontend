@@ -1,21 +1,149 @@
- <div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-title class="title">Login Users</mat-card-title>
+<div class="login-container">
+  <!-- Login / Signup Card -->
+  <mat-card class="login-card" *ngIf="isLogin">
+    <mat-card-title class="title">
+      {{ isLoginMode ? 'Login Users' : 'Admin Sign Up' }}
+    </mat-card-title>
 
-    <form (ngSubmit)="login()" #loginForm="ngForm">
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" name="email" [(ngModel)]="email" required />
-      </mat-form-field>
+    <form #formRef="ngForm" (ngSubmit)="onSubmit(formRef)">
+      <!-- Sign Up Fields -->
+      <div *ngIf="!isLoginMode && !isForgotPassword" class="admin-details">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Firstname</mat-label>
+          <input matInput name="firstName" [(ngModel)]="firstName" required />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" name="password" [(ngModel)]="password" required />
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Lastname</mat-label>
+          <input matInput name="lastName" [(ngModel)]="lastName" required />
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit" class="full-width">Login</button>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mobile</mat-label>
+          <input matInput name="mobile" [(ngModel)]="mobile" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" name="signupEmail" [(ngModel)]="signupEmail" required />
+        </mat-form-field>
+
+        <!-- OTP for Signup -->
+        <div *ngIf="!signupOtpSent">
+          <button mat-raised-button color="accent" (click)="sendSignupOtp()">Send OTP</button>
+        </div>
+
+        <div *ngIf="signupOtpSent && !signupOtpVerified">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Enter OTP</mat-label>
+            <input matInput type="text" [(ngModel)]="signupEnteredOtp" name="signupOtp" />
+          </mat-form-field>
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+
+          <button mat-raised-button color="primary" (click)="verifySignupOtp()">Verify OTP</button>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" name="signupPassword" [(ngModel)]="signupPassword"
+                 [disabled]="!signupOtpVerified" required />
+        </mat-form-field>
+      </div>
+
+      <!-- Login Fields -->
+      <div *ngIf="isLoginMode && !isForgotPassword">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" name="email" [(ngModel)]="email" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" name="password" [(ngModel)]="password" required />
+        </mat-form-field>
+      </div>
+
+      <!-- Submit Button -->
+      <button mat-raised-button color="primary" type="submit" class="full-width">
+        {{ isLoginMode ? 'Login' : 'Register Admin' }}
+      </button>
     </form>
 
+    <!-- Forgot Password Button -->
+    <button mat-button class="forgot-password-btn" (click)="openForgotPassword()" *ngIf="isLoginMode">
+      Forgot Password?
+    </button>
+
+    <!-- Error Message -->
     <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+    <!-- Toggle Login / Sign Up -->
+    <div style="text-align: center; margin-top: 10px;">
+      <span>{{ isLoginMode ? 'Don’t have an account?' : 'Already have an account?' }}</span>
+      <button mat-button color="accent" (click)="toggleMode()">
+        {{ isLoginMode ? 'Sign Up' : 'Login' }}
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Forgot Password Card -->
+  <mat-card class="login-card" *ngIf="isForgotPassword">
+    <div class="forgot-password-form">
+      <mat-card-title class="title">Reset Password</mat-card-title>
+
+      <!-- Step 1: Enter Email -->
+      <div *ngIf="!isOtpSent">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="resetEmail" name="resetEmail" required />
+        </mat-form-field>
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <button mat-raised-button color="accent" (click)="generateOTP()">Generate OTP</button>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div *ngIf="isOtpSent && !isOtpVerified">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="resetEmail" name="resetEmail" disabled />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Enter OTP</mat-label>
+          <input matInput type="text" [(ngModel)]="enteredOtp" name="otp" required />
+        </mat-form-field>
+
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+        <button mat-raised-button color="primary" (click)="verifyOtp()">Verify OTP</button>
+      </div>
+
+      <!-- Step 3: Reset Password -->
+      <div *ngIf="isOtpVerified">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="resetEmail" name="resetEmail" disabled />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>New Password</mat-label>
+          <input matInput type="password" [(ngModel)]="newPassword" name="newPassword" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="resetPassword()">Reset Password</button>
+
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </div>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button mat-button color="accent" (click)="backToLogin()">Back to Login</button>
+      </div>
+    </div>
   </mat-card>
 </div>

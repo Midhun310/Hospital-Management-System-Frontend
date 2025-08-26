@@ -8,14 +8,16 @@
 
 .dashboard-card {
   width: 200px;
-  height: 120px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
   text-align: center;
-  background-color:aqua;
+  background: #e1eec3;
+  background: -webkit-linear-gradient(to right, #f05053, #e1eec3);
+  background: linear-gradient(to right, #f05053, #e1eec3);
 
   &:hover {
     transform: scale(1.05);
@@ -24,10 +26,8 @@
 
 th{
   font-size: large;
-  background-color:violet!important;
-  z-index: 1;
+  background-color: #457fca !important;
 }
-
 
 .edit-form {
   width: 800px;
@@ -67,55 +67,52 @@ th{
 
 .mat-toolbar{
   background-color: burlywood;
+  display: flex;
+  justify-content: space-between;
 }
 
-h2{
-  padding:20px;
+h2 {
+  padding: 20px;
+}
+
+h3 {
+  padding: 20px;
+  background: #005AA7;
+  background: -webkit-linear-gradient(to right, #FFFDE4, #005AA7);
+  background: linear-gradient(to right, #FFFDE4, #005AA7);
 }
 
 td{
-  background-color:coral;
+  background: #E8CBC0;
   font-size: 15px;
 }
 
 mat-card-title{
   font-size: 24px;
 }
-.edit{
-  background-color:yellow!important;
 
-}
 
 .delete{
-  background-color: red !important;
-  color: white !important;
+  color: red !important;
+  // color: white !important;
+  // margin-left: 5px;
 }
 
-.add{
- background-color: greenyellow !important;
-}
 
-ng-container{
-  width:51%
-}
 
 mat-form-field{
-  width: 51%;
+  width: 80%;
+  margin-left: 40px;
 }
 
 .update{
-  background-color: green!important;
-  color: white!important;
+  color: green!important;
 }
 
-.cancel{
-  background-color: red!important;
-  color: white!important;
-}
+
 
 .save{
-   background-color: green!important;
-  color: white!important;
+  color: green!important;
 }
 
 .date{
@@ -124,8 +121,21 @@ mat-form-field{
 
 .edit-appointment-form{
   width:80%;
+  scrollbar-width: none;
 }
 
+.mat-dialog{
+  scrollbar-width: none;
+}
+
+.submit{
+  align-items: center;
+  margin-left: 20px;
+}
+
+dialog{
+  background-color: #f05053!important;
+}
 
 
 

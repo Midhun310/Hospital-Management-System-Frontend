@@ -16,17 +16,21 @@
   transition: transform 0.2s ease;
   text-align: center;
   background: #e1eec3;
-  background: -webkit-linear-gradient(to right, #f05053, #e1eec3);
   background: linear-gradient(to right, #f05053, #e1eec3);
-  &:hover {
-    transform: scale(1.05);
-  }
+}
+.dashboard-card:hover {
+  transform: scale(1.05);
 }
 
 th {
   font-size: large;
   background-color: #457fca !important;
-  padding-left: 15px;
+}
+
+.edit-form {
+  width: 800px;
+  margin: 30px auto;
+  padding: 20px;
 }
 
 .form-title {
@@ -71,7 +75,6 @@ h2 {
 h3 {
   padding: 20px;
   background: #005AA7;
-  background: -webkit-linear-gradient(to right, #FFFDE4, #005AA7);
   background: linear-gradient(to right, #FFFDE4, #005AA7);
 }
 
@@ -81,7 +84,7 @@ td {
 }
 
 mat-card-title {
-  font-size: 30px;
+  font-size: 24px;
 }
 
 .delete {
@@ -101,18 +104,24 @@ mat-form-field {
   color: green !important;
 }
 
+.date {
+  width: 100%;
+}
+
+.edit-appointment-form {
+  width: 80%;
+  scrollbar-width: none;
+}
+
+.mat-dialog {
+  scrollbar-width: none;
+}
+
 .submit {
   align-items: center;
   margin-left: 20px;
 }
 
-.login-success-snackbar {
-  background-color: #4caf50;
-  color: white;
-}
-
-.login-error-snackbar {
-  background-color: #f44336;
-  color: white;
-}
-
+dialog {
+  background-color: #f05053 !important;
+}/*# sourceMappingURL=receptionistportal.component.css.map */
